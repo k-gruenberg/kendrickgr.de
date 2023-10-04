@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Auto-refresh</title>
+	</head>
+	<body>
+		<script>
+			setInterval(function() {
+				let d = new Date();
+				current_time.textContent = "Current time: " + ("0" + d.getHours()).substr(-2) + ":" + ("0" + d.getMinutes()).substr(-2) + ":" + ("0" + d.getSeconds()).substr(-2);
+			}, 100);
+
+			function go() {
+				var no_of_executions_done_so_far = 0;
+				var max_executions = parseInt(max_executions_user_input.value);
+				var interval = parseInt(interval_user_input.value); // (in seconds)
+
+				// Returns the number of milliseconds until the next multiple of 5 seconds (or any other value if the value of "interval" is set to a non-default value):
+				function getMillisUntilNext5sTime() {
+					// cf. https://stackoverflow.com/questions/4455282/call-a-javascript-function-at-a-specific-time-of-day
+					var now = new Date();
+					var next5sMultiple;
+					if (now.getSeconds() % interval == 0) {
+						next5sMultiple = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds() + interval, 0); // (rolling over the minutes when seconds >= 60 is done automatically!)
+					} else {
+						next5sMultiple = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), interval*Math.ceil(now.getSeconds()/interval), 0);
+					}
+					console.log("Next 5s time is: " + next5sMultiple);
+					return next5sMultiple - new Date();
+				}
+
+				// Schedules a reload of the iframe for the next time that the time in seconds is a multiple of 5 seconds:
+				function scheduleIframeReload() {
+					setTimeout(function(){
+						// Reload iframe:
+						ifr.src = site_url_user_input.value; //ifr.contentWindow.location.reload(); does not work cross-origin!!!
+						// Increase counter:
+						no_of_executions_done_so_far += 1;
+						// Show new increased counter:
+						execution_counter_label.textContent = "Executions: " + no_of_executions_done_so_far + "/";
+						// Reschule reload, unless max_executions has been reached:
+						if (no_of_executions_done_so_far < max_executions) {
+							scheduleIframeReload();
+						}
+					}, getMillisUntilNext5sTime());
+				}
+
+				// Schedule the first iframe reload:
+				scheduleIframeReload();
+			}
+		</script>
+		<span id="current_time">Current time: ?</span><br/>
+		<span id="execution_counter_label">Executions: 0/</span><input id="max_executions_user_input" type="text" value="1000" size="8"></input><br/>
+		<span id="interval_label">Interval: </span><input id="interval_user_input" type="text" value="5" size="4"></input>sec<br/>
+		<span id="site_url_label">Site: </span><input id="site_url_user_input" type="text" value="https://www.bing.com"></input><input type="button" value="Go!" onclick="go();"></input><br/>
+		<iframe id="ifr" src=""></iframe>
+	</body>
+</html>
