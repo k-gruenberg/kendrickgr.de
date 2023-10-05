@@ -33,7 +33,7 @@
 				function scheduleIframeReload() {
 					setTimeout(function(){
 						// Reload iframe:
-						ifr.src = site_url_user_input.value; //ifr.contentWindow.location.reload(); does not work cross-origin!!!
+						ifr.src = (no_of_executions_done_so_far % 2 == 0) ? site_url_user_input1.value : site_url_user_input2.value; //ifr.contentWindow.location.reload(); does not work cross-origin!!!
 						// Increase counter:
 						no_of_executions_done_so_far += 1;
 						// Show new increased counter:
@@ -50,9 +50,11 @@
 			}
 		</script>
 		<span id="current_time">Current time: ?</span><br/>
-		<span id="execution_counter_label">Executions: 0/</span><input id="max_executions_user_input" type="text" value="1000" size="8"></input><br/>
+		<span id="execution_counter_label">Executions: 0/</span><input id="max_executions_user_input" type="text" value="200" size="8"></input><br/>
 		<span id="interval_label">Interval: </span><input id="interval_user_input" type="text" value="5" size="4"></input>sec<br/>
-		<span id="site_url_label">Site: </span><input id="site_url_user_input" type="text" value="https://www.bing.com"></input><input type="button" value="Go!" onclick="go();"></input><br/>
+		<span id="site_url_label1">Site #1: </span><input id="site_url_user_input1" type="text" value="https://www.bing.com"></input><br/>
+		<span id="site_url_label2">Site #2: </span><input id="site_url_user_input2" type="text" value="https://en.wikipedia.org"></input><br/>
+		<input type="button" value="Go!" onclick="go();"></input><br/>
 		<iframe id="ifr" src=""></iframe>
 	</body>
 </html>
